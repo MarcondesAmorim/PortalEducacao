@@ -1,0 +1,85 @@
+<!DOCTYPE project []>
+
+	<!--  The attribute default indicate that <target> should be executed first -->
+	<project basedir="." default="copy" name="PortalEducacao">
+		<target name="init">
+			<echo> Variables initialization</echo>
+			<!-- Project Root, the location where the build.xml should be. -->
+			<property name="root.dir" value="."/>
+				
+			<!-- Source Code -->
+			<property name="sources.dir" value="${root.dir}/src" />
+			
+			<!-- Folder where tomcat is installed  -->
+			<property name="tomcat.dir" value="C:\Program Files\Apache Software Foundation\Tomcat 5.5" />
+			 
+			<!-- Folder where JSP Code will be salve -->
+			<property name="web.dir" value='${root.dir}/jsp' />
+			
+			<!-- Auxiliar Folder to compilation -->
+			<property name="build.dir" value='${root.dir}/FolderGeneration' />
+			
+			<!-- Folder WEB-INF to generation -->
+			<property name="webinf.dir" value='${build.dir}/WEB-INF' />
+			
+			<!-- Folder where the compiled code will be -->
+			<property name="classes.dir" value='${webinf.dir}/classes' />
+			
+			<!-- Folder where the generated package should be -->
+			<property name="dist.dir" value='${root.dir}/dist' />
+			
+			<!-- Resulting file name -->
+			<property name="fileWAR" value='PortalEducacao.war' />
+			
+			<!-- Folders that should be considered in the compilation when we use the tomcat library -->
+			<path id="classpath">
+				<fileset dir="${tomcat.dir}/common/lib" />
+			</path>
+		</target>
+		
+		<target name="clean" depends="init">
+			<echo> Recreating folders of the generation</echo>
+			<!-- Delete auxiliaries folders -->
+			<delete dir="${build.dir}" />
+			<delete dir="${dist.dir}" />
+			
+			<!-- Recreating diretorios auxiliaries folders -->
+			<mkdir dir="${build.dir}" />
+			<mkdir dir="${dist.dir}" />
+		</target>
+			
+		<target name="war" depends="clean">
+			<echo> Generating web package web </echo>
+			<!-- Copy auxiliar folder JSP. -->
+			<copy todir="${build.dir}/jsp">
+				<fileset dir="${web.dir}" />
+			</copy>
+			
+			<!-- To create the folder where the compiled code will be  -->
+			<mkdir dir="${classes.dir}" />
+			
+			<!--  Execute the compilation, indicate where get the files -->
+			<!--  and where they should be placed taking into account -->
+			<!--  the libraries defined by the classpath variable -->
+			<javac srcdir="${sources.dir}" destdir="${classes.dir}" includes="**" debug="true">
+				<classpath refid="classpath" />
+			</javac>
+			
+			<!--  copy the web.xml file to the correct location -->
+			<copy todir="${webinf.dir}" file="${root.dir}/WEB-INF/web.xml" />
+			
+			<!--  Compress the helper folder by creating a single file -->
+			<!--  and put in the dist folder so you can manipulate -->
+			<jar destfile="${dist.dir}/${fileWar}">
+				<fileset dir="${build.dir}" />
+			</jar>
+			
+			<delete dir="${build.dir}" />
+		</target>
+		
+		<target name="copy" depends="war">
+			<echo> Copying file (creating deploy) </echo>
+			<!-- copy generated file inside distro folder to tomcat webapps folder -->
+			<copy file="${dist.dir}/${fileWAR}" todir="${tomcat.dir}/webapps" />
+		</target>
+</project>
