@@ -61,7 +61,7 @@
 			<!--  Execute the compilation, indicate where get the files -->
 			<!--  and where they should be placed taking into account -->
 			<!--  the libraries defined by the classpath variable -->
-			<javac srcdir="${sources.dir}" destdir="${classes.dir}" includes="**" debug="true">
+			<javac includeantruntime="false" srcdir="${sources.dir}" destdir="${classes.dir}" includes="**" debug="true">
 				<classpath refid="classpath" />
 			</javac>
 			
@@ -70,7 +70,8 @@
 			
 			<!--  Compress the helper folder by creating a single file -->
 			<!--  and put in the dist folder so you can manipulate -->
-			<jar destfile="${dist.dir}/${fileWar}">
+			<echo>"${dist.dir}/${fileWar}"</echo>
+			<jar destfile="${dist.dir}/${fileWAR}">
 				<fileset dir="${build.dir}" />
 			</jar>
 			
@@ -81,5 +82,5 @@
 			<echo> Copying file (creating deploy) </echo>
 			<!-- copy generated file inside distro folder to tomcat webapps folder -->
 			<copy file="${dist.dir}/${fileWAR}" todir="${tomcat.dir}/webapps" />
-		</target>
+		</target> 
 </project>
